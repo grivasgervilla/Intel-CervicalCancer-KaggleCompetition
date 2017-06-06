@@ -1,0 +1,2 @@
+https://www.kaggle.com/marek3000/test-num-001
+https://stackoverflow.com/questions/18204782/runtimeerror-on-windows-trying-python-multiprocessing
