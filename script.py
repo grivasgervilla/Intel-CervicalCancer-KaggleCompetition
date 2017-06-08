@@ -47,11 +47,18 @@ def normalize_image_features(paths):
 #	print(train['path'][0])
 
 if __name__ == '__main__': 
-	'''
-	train = glob.glob('train_extra_resized/train_extra_resized/Type_1/*.jpg')
+	
+	#train = glob.glob('train_extra_resized/train_extra_resized/Type_1/*.jpg') + glob.glob('train_extra_resized/train_extra_resized/Type_2/*.jpg') \
+	#+ glob.glob('train_extra_resized/train_extra_resized/Type_3/*.jpg')
 
+	
+	train = glob.glob('all_data_resized/all_data_resized/Type_1/*.png') + glob.glob('all_data_resized/all_data_resized/Type_2/*.png') \
+	+ glob.glob('all_data_resized/all_data_resized/Type_3/*.png') + glob.glob('train_extra_resized/train_extra_resized/Type_1/*.jpg') \
+	+ glob.glob('train_extra_resized/train_extra_resized/Type_2/*.jpg') + glob.glob('train_extra_resized/train_extra_resized/Type_3/*.jpg')
+	
 	print("Imagenes de train cargadas")
-
+	
+	
 	#Creamos un dataset
 	train = pd.DataFrame([[p.split('/')[2].split('\\')[0],p.split('/')[2].split('\\')[1],p] for p in train], columns = ['type','image','path']) #limit for Kaggle Demo
 
@@ -62,7 +69,7 @@ if __name__ == '__main__':
 	
 	train_data = normalize_image_features(train['path'])
 	
-	np.save('train.npy', train_data, allow_pickle=True, fix_imports=True)
+	np.save('Datos/train32allv2.npy', train_data, allow_pickle=True, fix_imports=True)
 	
 	le = LabelEncoder()
 	
@@ -70,7 +77,7 @@ if __name__ == '__main__':
 	
 	print(le.classes_)
 	
-	np.save('train_target.npy', train_target, allow_pickle=True, fix_imports=True)
+	np.save('Datos/train_target32allv2.npy', train_target, allow_pickle=True, fix_imports=True)
 	
 	'''
 	test = glob.glob('test/test/*.jpg')
@@ -79,12 +86,12 @@ if __name__ == '__main__':
 	
 	test_data = normalize_image_features(test['path'])
 	
-	np.save('test.npy', test_data, allow_pickle=True, fix_imports=True)
+	np.save('test32.npy', test_data, allow_pickle=True, fix_imports=True)
 
 	test_id = test.image.values
 	
-	np.save('test_id.npy', test_id, allow_pickle=True, fix_imports=True)
-	
+	np.save('test_id32.npy', test_id, allow_pickle=True, fix_imports=True)
+	'''
 	
 
 
