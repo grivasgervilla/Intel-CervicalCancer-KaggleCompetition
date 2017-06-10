@@ -16,11 +16,11 @@ import numpy as np
 import os
 from keras.models import model_from_json
 
-test_data = np.load('test32.npy')
-test_id = np.load('test_id32.npy')
+test_data = np.load('test256.npy')
+test_id = np.load('test_id256.npy')
 
-experiment_name = "Experimentos/scrath_train_all32v2"
-submission_name = "scrath_train_all32v2" + ".csv"
+experiment_name = "Experimentos/scrath_train_all256dataAugmentationx20"
+submission_name = "scrath_train_all256dataAugmentationx20" + ".csv"
 
 json_file = open(experiment_name + '/model.json', 'r')
 model_json = json_file.read()
@@ -28,7 +28,7 @@ json_file.close()
 
 model = model_from_json(model_json)
 
-model.load_weights(experiment_name + "/pesos-epoch99-val_acc0.51296.hdf5")
+model.load_weights(experiment_name + "/pesos-epoch82-val_acc0.52298.hdf5")
 
 pred = model.predict_proba(test_data)
 df = pd.DataFrame(pred, columns=['Type_1','Type_2','Type_3'])

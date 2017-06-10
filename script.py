@@ -26,7 +26,7 @@ def im_stats(im_stats_df):
 	
 def get_im_cv2(path):
     img = cv2.imread(path)
-    resized = cv2.resize(img, (32, 32), cv2.INTER_LINEAR) #use cv2.resize(img, (64, 64), cv2.INTER_LINEAR)
+    resized = cv2.resize(img, (256, 256), cv2.INTER_LINEAR) #use cv2.resize(img, (64, 64), cv2.INTER_LINEAR)
     return [path, resized]
 
 def normalize_image_features(paths):
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 	
 	train_data = normalize_image_features(train['path'])
 	
-	np.save('Datos/train32allv2.npy', train_data, allow_pickle=True, fix_imports=True)
+	np.save('Datos/train256all.npy', train_data, allow_pickle=True, fix_imports=True)
 	
 	le = LabelEncoder()
 	
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 	
 	print(le.classes_)
 	
-	np.save('Datos/train_target32allv2.npy', train_target, allow_pickle=True, fix_imports=True)
+	np.save('Datos/train_target256all.npy', train_target, allow_pickle=True, fix_imports=True)
 	
 	'''
 	test = glob.glob('test/test/*.jpg')

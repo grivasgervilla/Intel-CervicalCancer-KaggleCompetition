@@ -16,8 +16,8 @@ import numpy as np
 import os
 import pickle
 
-train_data = np.load('Datos/train32allv2.npy')
-train_target = np.load('Datos/train_target32allv2.npy')
+train_data = np.load('Datos/train256all.npy')
+train_target = np.load('Datos/train_target256all.npy')
 
 
 x_train,x_val_train,y_train,y_val_train = train_test_split(train_data,train_target,test_size=0.4, random_state=17)
@@ -26,14 +26,14 @@ np.random.seed(17)
 
 def create_model(opt_='adamax'):
 	model = Sequential()
-	model.add(Convolution2D(1, 3, 3, activation='relu', dim_ordering='th', input_shape=(3, 32, 32))) #use input_shape=(3, 64, 64)
+	model.add(Convolution2D(1, 3, 3, activation='relu', dim_ordering='th', input_shape=(3, 256, 256))) #use input_shape=(3, 64, 64)
 	model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), dim_ordering='th'))
 	model.add(Convolution2D(2, 3, 3, activation='relu', dim_ordering='th'))
 	model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), dim_ordering='th'))
 	model.add(Convolution2D(4, 3, 3, activation='relu', dim_ordering='th'))
 	model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), dim_ordering='th'))
-	#model.add(Convolution2D(8, 3, 3, activation='relu', dim_ordering='th'))
-	#model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), dim_ordering='th'))
+	model.add(Convolution2D(8, 3, 3, activation='relu', dim_ordering='th'))
+	model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), dim_ordering='th'))
 	model.add(Dropout(0.2))
 
 	model.add(Flatten())
@@ -48,13 +48,23 @@ def create_model(opt_='adamax'):
 	
 if __name__ == '__main__': 
 	start_time = time.time()
-	#datagen = ImageDataGenerator(rotation_range=0.3, zoom_range=0.3)
-	#datagen.fit(train_data)
+	
+	datagen = ImageDataGenerator(
+			rotation_range=180,
+			width_shift_range=0.2,
+			height_shift_range=0.2,
+			shear_range=0.2,
+			zoom_range=0.2,
+			horizontal_flip=True,
+			vertical_flip=True,
+			fill_mode='nearest')
+			
+	datagen.fit(train_data)
 	
 	model = create_model()
 	model_json = model.to_json()
 	
-	experiment_name = "Experimentos/scrath_train_all32v2"
+	experiment_name = "Experimentos/scrath_train_all256dataAugmentationx20"
 	
 	if not os.path.exists(experiment_name):
 		os.makedirs(experiment_name)
@@ -68,8 +78,8 @@ if __name__ == '__main__':
 	filepath=experiment_name + "/pesos-epoch{epoch:02d}-val_acc{val_acc:.5f}.hdf5"
 	checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 	callbacks_list = [checkpoint]
-	#nnmodel = model.fit_generator(datagen.flow(x_train,y_train, batch_size=15, shuffle=True), nb_epoch=2, samples_per_epoch=len(x_train), callbacks=callbacks_list, verbose=2, validation_data=(x_val_train, y_val_train))
-	nnmodel = model.fit(x_train,y_train, epochs=100, batch_size=15, callbacks=callbacks_list, verbose=2, validation_data=(x_val_train, y_val_train))
+	nnmodel = model.fit_generator(datagen.flow(x_train,y_train, batch_size=15, shuffle=True),steps_per_epoch=(len(x_train)/15)*20, nb_epoch=100, samples_per_epoch=len(x_train), callbacks=callbacks_list, verbose=2, validation_data=(x_val_train, y_val_train))
+	#nnmodel = model.fit(x_train,y_train, epochs=100, batch_size=15, callbacks=callbacks_list, verbose=2, validation_data=(x_val_train, y_val_train))
 
 	pickle.dump(nnmodel.history, open((experiment_name + "/" + "history.p"), "wb"))
 
