@@ -22,13 +22,13 @@ x_train,x_val_train,y_train,y_val_train = train_test_split(train_data,train_targ
 np.random.seed(17)
 
 #Cargamos la red sobre la que vamos a hacer el fine tunning
+'''
 base_model = ResNet50(weights = 'imagenet', include_top = False)
 
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
 x = Dense(1024, activation='relu')(x)
 predictions = Dense(3, activation='softmax')(x)
-#K.set_image_data_format('channels_first')
 
 model = Model(inputs=base_model.input, outputs=predictions)
 
@@ -37,6 +37,7 @@ for layer in base_model.layers:
     
 
 model.compile(optimizer = 'adamax', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+'''
 
 datagen = ImageDataGenerator(
     rotation_range=180,
@@ -49,18 +50,20 @@ datagen = ImageDataGenerator(
     fill_mode='nearest')
 
 datagen.fit(train_data)
-model_json = model.to_json()
+#model_json = model.to_json()
 
-experiment_name = "Experimentos/OVO/fine_tunning_ResNet50_all244fineTuningx20"
+experiment_name = "Experimentos/OVO/fine_tunning_ResNet50_all244fineTuningx20Continuation"
 
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
-	    
+
+'''
 with open(experiment_name + "/" + "modelTransferLearning.json","w") as json_file:
     json_file.write(model_json)
+'''
 
 if __name__ == '__main__':
-    
+    '''
     filepath=experiment_name + "/pesos-transferLearning-epoch{epoch:02d}-val_acc{val_acc:.5f}.hdf5"
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
@@ -69,14 +72,23 @@ if __name__ == '__main__':
         print(layer)
 
     nnmodel = model.fit_generator(datagen.flow(x_train,y_train, batch_size=15, shuffle=True),steps_per_epoch=(len(x_train)/15)*20, nb_epoch=10, samples_per_epoch=len(x_train), callbacks=callbacks_list, verbose=2, validation_data=(x_val_train, y_val_train))
+    '''
 
+    past_experiment_name = #AQUI DONDE ESTE EL MODELO QUE SE ENTRENO
+
+    json_file = open(past_experiment_name + '/model.json', 'r')
+    model_json = json_file.read()
+    json_file.close()
+
+    model = model_from_json(model_json)
+    model.load_weights(past_experiment_name + "LOS PESOS DE LA MEJOR EPOCH QUE HAYA")
+    
     for layer in model.layers[:162]:
         layer.trainable = False
     for layer in model.layers[162:]:
         layer.trainable = True
    	
 
-    #Descongelamos algunas
     model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 	
     model_json = model.to_json()
@@ -89,7 +101,7 @@ if __name__ == '__main__':
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
     
-    nnmodel = model.fit_generator(datagen.flow(x_train,y_train, batch_size=15, shuffle=True),steps_per_epoch=(len(x_train)/15)*20, nb_epoch=50, samples_per_epoch=len(x_train), callbacks=callbacks_list, verbose=2, validation_data=(x_val_train, y_val_train))
+    nnmodel = model.fit_generator(datagen.flow(x_train,y_train, batch_size=15, shuffle=True),steps_per_epoch=(len(x_train)/15)*20, nb_epoch=100, samples_per_epoch=len(x_train), callbacks=callbacks_list, verbose=2, validation_data=(x_val_train, y_val_train))
     
     pickle.dump(nnmodel.history, open((experiment_name + "/" + "history.p"), "wb"))
 
