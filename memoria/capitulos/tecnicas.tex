@@ -26,17 +26,16 @@ Entonces a esta imagen, usando como esquema de agregación la media, tenemos las
 \begin{table}[H]
 \centering
 \caption{Probabilidades de la media}
-\label{my-label}
 \begin{tabular}{|c|c|c|}
 \hline
 Tipo 1 & Tipo 2 & Tipo 3 \\ \hline
-0.67   & 0.19   & 0.14   \\ \hline
+0.67   & 0.17   & 0.17   \\ \hline
 \end{tabular}
 \end{table}
 
 Como vemos mientras que dos clasificadores nos dan una confianza del 100\% en que la imagen es del Tipo 1, como el clasificador 2-3 da como probabilidad para esa clase el 0, puesto que no conoce el Tipo 1, y aunque ese clasificador no tiene certidumbre sobre la pertenencia de la imagen al Tipo 2 o al Tipo 3, dando probabilidad 0.5 para ambas, lo que ocurre es que la probabilidad que le damos a la imagen para el Tipo 1 es de 0.67. Esto nos parecía algo injusto y nos gustaría un esquema que tuviese en cuenta este tipo de escenarios, dando mayor peso a los dos primeros clasificadores que al que no está seguro sobre la clase a la que pertenece la imagen.\\
 
-Por lo que acabamos de exponer decidimos probar con otro esquema, para ello leímo un artículo, en el que participa como autor el profesor Francisco Herrera y que referenciamos en la bibliografía de esta práctica, en el que se describen distintos esquemas de agregación para binarización de problemas OVO y OVA. Entre todos los esquemas expuestos nos decantamos por el llamado \emp{LVPC}, el cual se dice en el artículo que, en el caso en estar ante un problema con clasificadores binarios normalizados, es decir, clasificadores que para una clase den la probabilidad $\alpha$ y para la otra clase den su opuesto, $1 - \alpha$, entonces estamos antes un esquema establece una votación ponderada que penaliza a los clasificadores que no tienen confianza en su elección respecto a la pertenencia de la instancia a una de las dos clases que distingue.\\
+Por lo que acabamos de exponer decidimos probar con otro esquema, para ello leímos un artículo, en el que participa como autor el profesor Francisco Herrera y que referenciamos en la bibliografía de esta práctica, en el que se describen distintos esquemas de agregación para binarización de problemas OVO y OVA. Entre todos los esquemas expuestos nos decantamos por el llamado \emp{LVPC}, el cual se dice en el artículo que, en el caso en estar ante un problema con clasificadores binarios normalizados, es decir, clasificadores que para una clase den la probabilidad $\alpha$ y para la otra clase den su opuesto, $1 - \alpha$, entonces estamos antes un esquema establece una votación ponderada que penaliza a los clasificadores que no tienen confianza en su elección respecto a la pertenencia de la instancia a una de las dos clases que distingue.\\
 
 Este esquema funciona como sigue, si llamamos $r_{ij}$ a la probabilidad que da el clasificador binario para las clases $i$ y $j$ para la pertenencia de una instancia a la clase $i$, y $r_{ji}$ a su análogo para la clase $j$. Entonces se calculan los siguientes términos:
 
@@ -47,17 +46,55 @@ $C_{ij} = min\lbrace r_{ij}, r_{ji} \rbrace$\\
 $I_{ij} = 1 - max\lbrace r_{ij}, r_{ji} \rbrace$
 \end{center}
 
-donde, como explica el artículo $C_{ij}$ es el grado de conflicto (el grado en el que ambas clases son escogidas por el clasificador), $I_{ij}$ es el grado de ignorancia que tiene el clasificador (el grado en el que ninguna de las dos clases es escogida por el clasificador) y finalmente $P_{ij}$ y $P_{ji}$ es el grado de preferencia del clasificador hacia cada una de las dos clases. Entonces una vez que hemos calculado esto para cada instancia el esquema asigna la siguiente clase a esta instancia:
+donde, como explica el artículo, $C_{ij}$ es el grado de conflicto (el grado en el que ambas clases son escogidas por el clasificador), $I_{ij}$ es el grado de ignorancia que tiene el clasificador (el grado en el que ninguna de las dos clases es escogida por el clasificador) y finalmente $P_{ij}$ y $P_{ji}$ es el grado de preferencia del clasificador hacia cada una de las dos clases. Entonces una vez que hemos calculado esto para cada instancia el esquema asigna la siguiente clase a esta instancia:
 
 \begin{center}
 $\underset{i = 1,...,m}{argmax} \underset{1 \leq j \neq i \leq m}{\sum} P_{ij} + \frac{1}{2} C_{ij} + \frac{N_i}{N_i + N_j}I_{ij}$
 \end{center}
 
-Donde $N_i$ es el número de instancias en nuestro conjunto de entrenamiento de la clase $i$. En nuestro caso, como realizamos un \textit{data augmentation online} entonces hemos supuesto que se mantienen las proporciones del conjunto de entrenamiento original, las del conjunto inicial y las adicionales para cada clase. Por otro lado como no queremos dar un resultado absoluto, es decir, dar probabilidad 1 a una clase y 0 al resto, lo que hemos hecho es en lugar de tomar el $argmax$ de las 3 sumatorias que se calculan es usar directamente el resultado de las sumatorias, dividido por 3, ya que nos encontramos con que el valor de las tres sumatorias sumaban 3 siempre, con lo que hemos dividido por tres para que sumen 1.
+Donde $N_i$ es el número de instancias en nuestro conjunto de entrenamiento de la clase $i$. En nuestro caso, como realizamos un \textit{data augmentation online} entonces hemos supuesto que se mantienen las proporciones del conjunto de entrenamiento original, las del conjunto inicial y las adicionales para cada clase. Por otro lado como no queremos dar un resultado absoluto, es decir, dar probabilidad 1 a una clase y 0 al resto, lo que hemos hecho es en lugar de tomar el $argmax$ de las 3 sumatorias que se calculan es usar directamente el resultado de las sumatorias, dividido por 3, ya que nos encontramos con que el valor de las tres sumatorias sumaban 3 siempre, con lo que hemos dividido por tres para que sumen 1. Sin embargo los resultados obtenidos con este método para el mismo ejemplo anterior son los siguientes:
+
+\begin{table}[H]
+\centering
+\caption{Probabilidades de LVPC}
+\begin{tabular}{|c|c|c|}
+\hline
+Tipo 1 & Tipo 2 & Tipo 3 \\ \hline
+0.67   & 0.19   & 0.14   \\ \hline
+\end{tabular}
+\end{table}
+
+Por lo que no se soluciona el problema que queríamos evitar, seguimos teniendo la misma probabilidad para el Tipo 1, aunque sí que se penaliza al Tipo 3 en favor del Tipo 2 al haber más instancias de entrenamiento de este. Veremos adelante que además los resultados obtenidos con este método fueron peores que usando la media como esquema de agregación.
 
 \subsection{Extracción de características con una CNN}
 
+En esta ocasión el proceso fue bastante más sencillo, simplemente cargamos el modelo entrenado con la red ResNet 50, que fue el que mejor resultado nos dio de cara a la clasificación, gracias a las utilizadades de \code{Keras} que nos permiten guardar tanto la topología de la red como sus pesos, de este modo en cualquier momento se puede recuperar un modelo sin necesidad de volver a entrenarlo. Para ello cargamos el modelo con las herramientas \code{model\_from\_json} y \code{load\_weights}, y a continuación creamos un nuevo modelo a partir de este especificando que queremos como capa de salida, el parámetro \code{outputs} de la clase \code{Model}, la última de la parte convolucional de la red. Para saber qué capa escogíamos listamos los nombres de las capas de la red e identificamos el patrón de la estructura de la red y escogimos la última de convolución. Luego simplemente tuvimos que hacer una \textit{predicción} con este modelo sobre las imágenes de \textit{train} y de \textit{test} para luego usar estas características con los algoritmos que comentamos a continuación. Señalar que por falta de recurso y de tiempo en esta ocasión no se realizó \textit{data augmentation}.\\
 
+Pasamos ahora a hablar de los dos algoritmos de clasificación que empleamos sobre este conjunto de características, 2048 para cada imagen, \emp{SVM y GBoost} ambos usados a través de la librería \code{scikit-learn} para Python. Hay que destacar que aunque esta librería no cuenta con soporte para GPU en general hemos quedado muy sorprendidos y satisfechos con el rendimiento de la implementación de estos algoritmos y la comodidad de uso que tiene toda su funcionalidad, además de la excelente documentación.
+
+\subsubsection{SVM}
+
+Para hacer esto creamos un modelo de predicción de tipo SVM con la función \code{SVC} de la librería \code{scikit-learn}, eligiendo que el esquema que queremos que siga para la clasificación es de tipo OVO y especificando que queremos poder obtener las probabilidades con las que ha clasificado cada una de las instancias que queremos. A continuación, y a fin de mejorar la predicción obtenida hemos creado un grid de parámetros, que se especifica usando simplemente una estructura de tipo diccionario de Python, en este grid especificamos los siguiente parámetros con los que probar:
+
+\begin{itemize}
+\item El kernel, es decir, el tipo de funciones que se usan para \textit{separar} las instancias, podrá ser o de tipo polinomial o funciones de base radial.
+\item El parámetro de error C que nos indica si queremos que el hiperplano se ajuste más a los punto de \textit{training}, es decir, queremos que no se comentan muchos errores de clasificación en el train, cuando le damos a C un valor alto o si queremos un hiperplano con más margen pero que por contra cometa más errores, con una valor de C alto. En nuestro caso probamos con los valores 1 y 10.
+\item La tolerancia para el criterio de parada puede ser o 0.1 o 0.001.
+\end{itemize}
+
+Entonces una vez que especificamos este grid empleamos la función \code{GridSearchCV} que buscará la mejor combinación de parámetros posible haciendo uso de un procedimiento de validación cruzada, incluso se nos da la opción de lanzar varios procesos en paralelo con distintas combinaciones de parámetros de modo que se reduzca el tiempo de cómputo. Tras este proceso por el que se seleccionan como kernel las funciones de base radial, como tolerancia el valor 0.1 y se usa como parámetro de error 10, es decir, se ajustan las funciones de base radial a los datos de entrenamiento, pasamos a entrenar el modelo con la función \code{fit} y a obtener las probabilidades de predicción sobre el conjunto de test con la función \code{predict\_proba}.
+
+\subsubsection{GBoost}
+
+El proceso para GBoost es muy similar sólo que ahora hacemos uso de la clase \code{GradientBoostingClassifier} y el grid de parámetros que configuramos es el siguiente:
+
+\begin{itemize}
+\item El número de estimadores puede ser 50, 100 o 200.
+\item Las profundidad máxima de los árboles puede ser 3 o 5.
+\item La tasa de aprendizaje podrá tomar los valores 0.001, 0.1 o 1.
+\end{itemize}
+
+Tras el proceso descrito con anterioridad se llega a que el mejor conjunto de parámetros es el TODO y nuevamente obtenemos las probabilidades con estos parámetros.
 
 \subsection{Extracción de características con técnicas convencionales}
 
