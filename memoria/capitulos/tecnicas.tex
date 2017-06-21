@@ -78,44 +78,7 @@ Este modelo cuenta con una serie de pesos preentrenados usando ImageNet. Lo prim
 
 \subsubsection{ResNet50}
 
-Este modelo, en cuanto a funcionamiento por parte del usuario, es muy similar al modelo anterior, por lo que realmente, se podría utilizar un script de en el cual se ha entrenado a InceptionV3 para hacer lo propio con ResNet50, realizando los cambios adecuados, como es natural. Para poder usar \code{ResNet50} necesitamos el paquete \code{keras.applications.resnet50}. Al modelo, se le añaden las mismas capas que se le añadieron a InceptionV3, pero en este caso, se congelan las 162 primeras capas, ya que esta red cuenta con un menor número de ellas y se dividen en lo que podríamos denonimar "patrones", por lo que decidimos congelar todas las capas hasta el inicio del último de estos "patrones". Las épocas se mantienen iguales, 10 para \textit{transfer learning} y 50 para \textit{fine tunning}. Utilizando esta red se obtuvieron resultados muy prometedores, los mejores obtenidos, por lo que se decidió a guardar el modelo entrenado, y volver a entrenarlo usando únicamente \textit{fine tunning} con 100 épocas, lo que nos daría un total de 150 épocas durante su entrenamiento. Para nuestra decepción, los resultados no mejoraron.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
+Este modelo, en cuanto a funcionamiento por parte del usuario, es muy similar al modelo anterior, por lo que realmente, se podría utilizar un script de en el cual se ha entrenado a InceptionV3 para hacer lo propio con ResNet50, realizando los cambios adecuados, como es natural. Para poder usar \code{ResNet50} necesitamos el paquete \code{keras.applications.resnet50}. Al modelo, se le añaden las mismas capas que se le añadieron a InceptionV3, pero en este caso, se congelan las 162 primeras capas, ya que esta red cuenta con un menor número de ellas y se dividen en lo que podríamos denonimar "patrones", por lo que decidimos congelar todas las capas hasta el inicio del último de estos "patrones". Las épocas se mantienen iguales, 10 para \textit{transfer learning} y 50 para \textit{fine tunning}. Utilizando esta red se obtuvieron resultados muy prometedores, de los mejores obtenidos, por lo que se decidió a guardar el modelo entrenado, y volver a entrenarlo usando únicamente \textit{fine tunning} con 100 épocas, lo que nos daría un total de 150 épocas durante su entrenamiento. Para nuestra decepción, los resultados no mejoraron.
 
 
 \subsection{OVO}
