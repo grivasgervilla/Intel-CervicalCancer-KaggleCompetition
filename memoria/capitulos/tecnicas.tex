@@ -1,5 +1,97 @@
 \section{Técnicas de clasificación}
 
+\subsection{Learning from scratch}
+
+Como primera técnica vamos a utilizar \textit{learning from scratch}. La idea básica de esta técnica es crear una red neuronal, seleccionando manualmente las capas, es decir, estableciendo tu topología, y posteriormente entrenarla. En un primer momento decidimos crear una red neuronal con una serie de capas de convolución, maxpolling, dropout, flatten y dense. Para ello creamos un modelo utilizando la clase \code{Sequencial()} de \code{Keras}. Una vez creado el modelo, se le añaden las distintas capas usando el método \code{add}, al que le pasamos el tipo de capa y sus parámetros. Estos parámetros varían dependiendo del tipo de capa.
+
+\begin{itemize}
+\item Para la capa de Convolución disponemos de los parámetros \textit{input\_shape}, que es el tamaño de la entrada, \textit{activation}, función de activación, el número de convoluciones a realizar y el tamaño de la matriz, esto viene de la forma (4,3,3), 4 convoluciones con una matriz 3x3 \textit{dim\_ordering}, y el orden de la dimensión de la imagen. Este último es compartido por el resto de capas. 
+\item Para la capa de MaxPolling disponemos de \textit{pool\_size}, tamaño de la ventana de polling, y \textit{strides}, factor por el cual reducir la escala
+\item Para la capa de Dropout contamos con \textit{rate}, cantidad de información a desechar.
+\item Para la capa de Dense necesitamos \textit{activation}, función de activación, y las dimensiones de la salida.
+\item La capa Flatten no requiere ningún parámetro.
+\end{itemize}
+
+Finalmente el modelo con las distintas capas se compila usando \code{compile()} que recibe como parámetros el optimizador a usar y la función de pérdida.\\
+
+En nuestro caso, la primera red con la que se realizaron pruebas contaba con la siguiente topología:
+
+\begin{itemize}
+\item Convolución aplicando 4 convoluciones con una matriz 3x3, con activación relu e input\_shape (3,16,16).
+\item MaxPooling2D con pool\_size (2, 2) y strides (2, 2).
+\item Convolución aplicando 8 convoluciones con una matriz 3x3, con activación relu e input\_shape (3,16,16).
+\item MaxPooling2D con pool\_size (2, 2) y strides (2, 2).
+\item Dropout con rate 0.2
+\item Flatten
+\item Dense con dimesión 12 y activation tanh
+\item Dropout con rate 0.1
+\item Dense con dimesión 3 y activation softmax
+\end{itemize}
+
+Con dicha red se realizaron los primeros experimentos, con \texti{input\_shapes} de 32x32 y 256x256. Al realizarlos se obtuvieron mejores resultados con las imágenes de menor tamaño, por lo que se pensó que tal vez la red sobreaprendia con imágenes grandes. Al llegar a esta conclusión se eliminaron una serie de capas del modelo para corroborar que nuestras deducciones eran correctas. Pero el resultado fue una puntuación peor que la obtenida con la topología inicial. Debido a esto, este modelo mas sencillo fue desechado para posteriores expermientos.\\
+
+Llegados a este punto, decidimos aumentar el número de capas de nuestra red, por lo que su topología varió de la siguiente manera:
+
+\begin{itemize}
+\item Convolución aplicando 1 convolucón con una matriz 3x3 con activación relu e input\_shape (3, 256, 256)
+\item MaxPooling2D con pool\_size (2, 2) y strides (2, 2)
+\item Convolución aplicando 2 convoluciones con una matriz 3x3 y activation relu
+\item MaxPooling2D con pool\_size (2, 2) y strides=(2, 2)
+\item Convolución aplicando 4 convoluciones con una matriz 3x3 y activation relu
+\item MaxPooling2D con pool\_size (2, 2) y strides (2, 2)
+\item Convolución, aplicando 8 convoluciones con una matriz 3x3 y activación relu
+\item MaxPooling2D con pool\_size (2, 2) y strides (2, 2).
+\item Dropout con rate 0.2
+\item Flatten
+\item Dense con dimensión 24 y activación tanh
+\item Dropout con rate 0.1
+\item Dense con dimensión 12 y activación tanh
+\item Dropout con rate 0.1
+\item Dense con dimesión 3 y activación softmax
+\end{itemize}
+
+Con este modelo fue con el que mejores resultados se obtuvieron. En un primer momento se comprobó que este nuevo modelo mejoraba los resultados del anterior, una vez verificado procedimos a entrenarlo, pero en este caso utilizando las imágenes extra junto a las imágenes base. Esto no se realizó anteriormente ya que queríamos obtener una buena red ya que no sabíamos el tiempo de cómputo que requeriría entrenar utilizando todas las imágenes. Se realizaron experimentos con un tamaño de entrada de imágenes de 32x32 y de 256x256. Como era de esperar, los resultados mejoraron a los anteriores (PON AQUI SI 32 ERA MEJOR QUE 256 O AL REVES). Todos estas pruebas se realizaron con un
+\textit{batch\_size} de 15, y entre 50 y 100 épocas. Viendo esta tendencia a la mejora, decidimos dar le salto a \emp{data augmentation}.\\
+
+Para realizar el \textit{data augmentation} se utilizó el método \code{ImageDataGenerator} del paquete \code{preprocessing.image}. Dicho método tiene una gran cantidad de parámetros que nos sirven para crear nuevas imágenes a partir de las disponibles de diversas maneras, en nuestro caso hemos utilizado los siguientes:
+
+\begin{itemize}
+\item rotation\_range con valor 180. Básicamente establece el rango en el cual se van a realizar rotaciones aleatorias.
+\item width\_shift\_range y height\_shift\_range, ambos con valor 0.2. Rangos para cambios aleatorios horizontes y verticales.
+\item shear\_range con valor 0.2. Para realizar transformaciones de tipo cizalla.
+\item zoom\_range con valor 0.2. Para realizar transformaciones de tipo zoom.
+\item horizontal\_flip y vertical\_flip con valor True. Para invertir las imágenes vertical y horizontalmente.
+\item fill\_mode con valor nearest. Los puntos fuera de los límites de la entrada son rellenados dependiendo del valor elegido.
+\end{itemize}
+
+Una vez obtenidas las nuevas imágenes, son agregadas las imágenes de entrenamiento usando \code{fit}. También debemos modificar el valor del parámetro de \textit{steps\_per\_epoch} por el tamaño del conjunto de entrenamiento/15 (valor de \textit{batch\_size}) y multiplicarlo por un otro valor, esto se va a comentar a continuación. Con este valor podemos aumentar el número de pasos que se realizan antes de avanzar a la siguiente época, lo que significa que si aumentamos el valor, se aumenta la cantidad de datos adicionales que se procesan. Dicho esto, se realizaron pruebas con tamaños de entrada 32x32 y 256x256. Para 32x32 el valor multiplicador comentado fue de 4, mientras que para 256x256 fue 10 y posteriormente 20, ya que se obtuvo un mejor resultado usando las imágenes de tamaño 256x256 que las de 32x32, al contrario de lo que pasó anteriormente. Como comentario, utilizando \textit{data augmentation} x20 se obtuvo uno de los mejores resultados.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \subsection{OVO}
 
 Tras los experimentos realizados anteriormente pasamos a descomponer nuestro problema multiclase con un esquema OVO para ello entrenamos tres redes neuronales distintas, la elección de la red a entrenar la hicimos en base a los experimentos anteriores, con lo cual para cada uno de los tres problemas binarios entrenamos una ResNet 50 modificando sus capas \textit{fully connected} para que tengamos dos salidas en lugar de tres como anteriormente.\\
