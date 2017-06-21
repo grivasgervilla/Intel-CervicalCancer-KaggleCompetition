@@ -1,0 +1,100 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[spanish]{babel}
+
+\usepackage{pdflscape}
+\usepackage{afterpage}
+
+\usepackage{float}
+\usepackage[table,xcdraw]{xcolor} %para usar tablas con color de fondo en las celdas
+\usepackage{hyperref} %para poder poner enlaces
+\usepackage{listings} %para insertar código
+\usepackage{tikz}%para pintar las redes neuronales
+%\usepackage{color} %para poder definir y usar colores
+\usepackage{soulutf8} %para hacer los subrayados
+
+\usepackage{sectsty} %cambiar el color del título de las secciones y subsecciones
+
+
+\author{\textbf{Alejandro Casado Quijada \& Gustavo Rivas Gervilla}}
+\title{\textcolor{deepblue}{\textbf{Intel Cervical Cancer \\Competición Kaggle}}}
+\date{}
+
+%Configurando lstlisting para mostrar código Python con algún 	 de colores (copiado de http://tex.stackexchange.com/questions/83882/how-to-highlight-python-syntax-in-latex-listings-lstinputlistings-command) ------------------------------
+% Custom colors
+\definecolor{deepblue}{RGB}{12, 17, 104}
+\definecolor{pygreen}{RGB}{50, 229, 89}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{light-gray}{gray}{0.85}
+\definecolor{comment-gray}{gray}{0.65}
+\definecolor{light-blue}{rgb}{0.6,1,0.8}
+\definecolor{light-yellow}{rgb}{1,1,0.6}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{8} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{8}  % for normal
+
+%Configuración de los listings
+\lstset{
+	language=Python,
+	basicstyle=\ttm,
+	otherkeywords={self},             % Add keywords here
+	keywordstyle=\ttb\color{deepblue},
+	emph={MyClass,__init__},          % Custom highlighting
+	emphstyle=\ttb\color{deepred},    % Custom highlighting style
+	stringstyle=\color{deepgreen},
+	frame=tb,                         % Any extra options here
+	showstringspaces=false,            % 
+	commentstyle=\ttm\color{comment-gray}, % Custom comment style
+}
+%--------------------------------------------------------------------------------
+
+\newcommand{\emp}[1]{\sethlcolor{light-yellow}\hl{#1}} %Comando para poner código inline
+\newcommand{\code}[1]{\textcolor{pygreen}{\texttt{#1}}} %Comando para poner código inline
+\newcommand{\archive}[1]{\sethlcolor{light-blue}\hl{\texttt{#1}}} %Comando para resaltar nombres de archivos
+\renewcommand\tablename{Tabla} %Cambiar el nombre de las tablas
+\renewcommand\figurename{Figura} %Cambiar el nombre de las tablas
+\renewcommand{\contentsname}{Índice} %Cambiar el nombre de la ToC
+
+\usepackage{pdfpages}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\sectionfont{\color{deepblue}}
+\subsectionfont{\color{blue}}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+  \textbf{Nombre del equipo: }CaGer\\
+  \textbf{Ranking global: }225\\
+  \textbf{Puntuación: }0.81340
+\end{center}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+
+\input{capitulos/Introduccion}
+
+\input{capitulos/exploracion}
+
+\input{capitulos/preprocesamiento}
+
+\input{capitulos/tecnicas}
+
+
+
+\end{document}

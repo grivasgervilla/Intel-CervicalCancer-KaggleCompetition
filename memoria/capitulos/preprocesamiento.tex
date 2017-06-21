@@ -1,0 +1,13 @@
+\section{Preprocesamiento}
+
+En un primer momento se trabajó con las imágenes originales descargas desde Kaggle. Pero rápidamente, nos dimos cuenta de que debido a su tamaño, no iban a ser tratables mediante las herramientas disponibles. Con lo cual, el profesor aconsejó y facilitó las imágenes con un escalado, cuyo tamaño es de \emp{256x256 píxeles}. Con estas imágenes, no hubo ningún tipo de problema al utilizar las herramientas y técnicas que se comentarán a continuación.\\
+
+Además, nuestro compañero Francisco Javier Bolivar Lupiáñez, nos facilitó las imágenes adicionales reescaladas utilizando el mismo procedimiento que el profesor. Esto nos fue de mucha ayuda ya que por un lado, descargar las imágenes desde Kaggle tomaba mucho tiempo y además, se producían fallos en la descarga. Por otro lado, se ahorró el tiempo de cómputo necesario para redimensionar las imágenes, dicho tiempo podría haber sido muy abultado ya que estas imágenes se cuentan por miles.\\
+
+También se realizaron otros escalados, \emp{de 32x32 y 244x244}. El primero fue decisión propia, para realizar unas primeras pruebas con poco tiempo de cómputo, aunque, como veremos mas adelante, se obtuvieron en algunos casos mejores resultados que con las imágenes de 256x256. El segundo, era para poder adaptar nuestras imágenes a la entrada esperada por las redes neuronales que utilizaron en la fase de \textit{fine tuning}. Esto último se verá con mas detalle en las secciones posteriores.\\
+
+En el script que se uso como base, se tuvo que eliminar una transposición de las imágenes, ya que alteraba el orden de las dimensiones de las matrices que representaban las imágenes, lo que producía errores en el proceso de \textit{fine tunning}.\\
+
+Se optó por realizar un \emp{\textit{data augmentation} sobre las imágenes originales}, dicho aumento se realizó de manera online, es decir, en cada fase del entrenamiento de la red neuronal se creaba un nuevo \textit{batch} de imágenes. Para ello se emplearon una serie de transformaciones como: rotaciones, escalados, zoom, movimiento de cizalla aleatorios. Esto se hizo con la herramienta \code{ImageDataGenerator} de la librería \code{Keras}. También se realizó un proceso similar pero más específico en el caso del uso del descript HOG, hablaremos de esta idea más adelante.\\
+
+Finalmente, se pasó las imágenes a \emp{escala de grises} para realizar extracción de características, tanto con \textbf{HOG}, como con \textbf{BRIEF}. Aunque, finalmente, no se pudo obtener resultados debido al poco tiempo disponible para realizar esta última fase. Con esto terminaríamos el repaso a las distintas transformaciones que se han realizado sobre las imágenes antes de pasar a entrenar una red o realizar la extracción de características.
