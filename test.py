@@ -16,21 +16,21 @@ import numpy as np
 import os
 from keras.models import model_from_json
 
-test_data = np.load('test256.npy')
-test_id = np.load('test_id256.npy')
+test_data = np.load('Datos/test244.npy')
+test_id = np.load('Datos/test_id244.npy')
 
-experiment_name = "Experimentos/scrath_train_all256dataAugmentationx20"
-submission_name = "scrath_train_all256dataAugmentationx20" + ".csv"
+experiment_name = "Experimentos/OVO/fine_tunning_ResNet50_all244fineTuningx20OVO2-3"
+submission_name = "fine_tunning_ResNet50_all244fineTuningx20OVO2-3" + ".csv"
 
-json_file = open(experiment_name + '/model.json', 'r')
+json_file = open(experiment_name + '/modelFineTunning.json', 'r')
 model_json = json_file.read()
 json_file.close()
 
 model = model_from_json(model_json)
 
-model.load_weights(experiment_name + "/pesos-epoch82-val_acc0.52298.hdf5")
+model.load_weights(experiment_name + "/pesos-fineTunning-epoch48-val_acc0.67885.hdf5")
 
-pred = model.predict_proba(test_data)
-df = pd.DataFrame(pred, columns=['Type_1','Type_2','Type_3'])
+pred = model.predict(test_data)
+df = pd.DataFrame(pred, columns=['Type_2_23','Type_3_23'])
 df['image_name'] = test_id
 df.to_csv('Resultados/' + submission_name, index=False)
