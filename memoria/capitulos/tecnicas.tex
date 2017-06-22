@@ -28,7 +28,7 @@ En nuestro caso, la primera red con la que se realizaron pruebas contaba con la 
 \item Dense con dimesión 3 y activation softmax
 \end{itemize}
 
-Con dicha red se realizaron los primeros experimentos, con \texti{input\_shapes} de 32x32 y 256x256. Al realizarlos se obtuvieron mejores resultados con las imágenes de menor tamaño, por lo que se pensó que tal vez la red sobreaprendia con imágenes grandes. Al llegar a esta conclusión se eliminaron una serie de capas del modelo para corroborar que nuestras deducciones eran correctas. Pero el resultado fue una puntuación peor que la obtenida con la topología inicial. Debido a esto, este modelo mas sencillo fue desechado para posteriores expermientos.\\
+Con dicha red se realizaron los primeros experimentos, con \textit{input\_shapes} de 32x32 y 256x256. Al realizarlos se obtuvieron mejores resultados con las imágenes de menor tamaño, por lo que se pensó que tal vez la red sobreaprendia con imágenes grandes. Al llegar a esta conclusión se eliminaron una serie de capas del modelo para corroborar que nuestras deducciones eran correctas. Pero el resultado fue una puntuación peor que la obtenida con la topología inicial. Debido a esto, este modelo mas sencillo fue desechado para posteriores expermientos.\\
 
 Llegados a este punto, decidimos aumentar el número de capas de nuestra red, por lo que su topología varió de la siguiente manera:
 
