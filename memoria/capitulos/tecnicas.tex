@@ -2,7 +2,9 @@
 
 \subsection{Learning from scratch}
 
-Como primera técnica vamos a utilizar \textit{learning from scratch}. La idea básica de esta técnica es crear una red neuronal, seleccionando manualmente las capas, es decir, estableciendo tu topología, y posteriormente entrenarla. En un primer momento decidimos crear una red neuronal con una serie de capas de convolución, maxpolling, dropout, flatten y dense. Para ello creamos un modelo utilizando la clase \code{Sequencial()} de \code{Keras}. Una vez creado el modelo, se le añaden las distintas capas usando el método \code{add}, al que le pasamos el tipo de capa y sus parámetros. Estos parámetros varían dependiendo del tipo de capa.
+\emph{Para ver el código para la clasificación ver archivo \archive{scratch.py} del \href{https://github.com/Griger/Intel-CervicalCancer-KaggleCompetition}{Repositorio de GitHub de la asignatura}. Además las imágenes se escalan con el código contenido en \archive{script.py}. Finalmente las predicciones de cada modelo se obtienen con el script \archive{test.py}}\\
+
+Como primera técnica vamos a utilizar \textit{learning from scratch}. La idea básica de esta técnica es crear una red neuronal, seleccionando manualmente las capas, es decir, estableciendo tu topología, y posteriormente entrenarla. En un primer momento decidimos crear una red neuronal con una serie de capas de convolución, maxpolling, dropout, flatten y dense. Para ello creamos un modelo utilizando la clase \code{Sequencial()} de \code{Keras} (para esto nos inspiramos en el \textit{script} encontrado en un \textit{kernel} de la competición que se enlaza en la bibliografía). Una vez creado el modelo, se le añaden las distintas capas usando el método \code{add}, al que le pasamos el tipo de capa y sus parámetros. Estos parámetros varían dependiendo del tipo de capa.
 
 \begin{itemize}
 \item Para la capa de Convolución disponemos de los parámetros \textit{input\_shape}, que es el tamaño de la entrada, \textit{activation}, función de activación, el número de convoluciones a realizar y el tamaño de la matriz, esto viene de la forma (4,3,3), 4 convoluciones con una matriz 3x3 \textit{dim\_ordering}, y el orden de la dimensión de la imagen. Este último es compartido por el resto de capas. 
@@ -28,7 +30,7 @@ En nuestro caso, la primera red con la que se realizaron pruebas contaba con la 
 \item Dense con dimesión 3 y activation softmax
 \end{itemize}
 
-Con dicha red se realizaron los primeros experimentos, con \textit{input\_shapes} de 32x32 y 256x256. Al realizarlos se obtuvieron mejores resultados con las imágenes de menor tamaño, por lo que se pensó que tal vez la red sobreaprendia con imágenes grandes. Al llegar a esta conclusión se eliminaron una serie de capas del modelo para corroborar que nuestras deducciones eran correctas. Pero el resultado fue una puntuación peor que la obtenida con la topología inicial. Debido a esto, este modelo mas sencillo fue desechado para posteriores expermientos.\\
+Con dicha red se realizaron los primeros experimentos, con \textit{input\_shapes} de 32x32 y 256x256. Al realizarlos se obtuvieron mejores resultados con las imágenes de menor tamaño, por lo que se pensó que tal vez la red sobreaprendía con imágenes grandes. Al llegar a esta conclusión se eliminaron una serie de capas del modelo para corroborar que nuestras deducciones eran correctas. Pero el resultado fue una puntuación peor que la obtenida con la topología inicial. Debido a esto, este modelo más sencillo fue desechado para posteriores experimentos.\\
 
 Llegados a este punto, decidimos aumentar el número de capas de nuestra red, por lo que su topología varió de la siguiente manera:
 
@@ -50,42 +52,60 @@ Llegados a este punto, decidimos aumentar el número de capas de nuestra red, po
 \item Dense con dimesión 3 y activación softmax
 \end{itemize}
 
-Con este modelo fue con el que mejores resultados se obtuvieron. En un primer momento se comprobó que este nuevo modelo mejoraba los resultados del anterior, una vez verificado procedimos a entrenarlo, pero en este caso utilizando las imágenes extra junto a las imágenes base. Esto no se realizó anteriormente ya que queríamos obtener una buena red ya que no sabíamos el tiempo de cómputo que requeriría entrenar utilizando todas las imágenes. Se realizaron experimentos con un tamaño de entrada de imágenes de 32x32 y de 256x256. Como era de esperar, los resultados mejoraron a los anteriores (PON AQUI SI 32 ERA MEJOR QUE 256 O AL REVES). Todos estas pruebas se realizaron con un
-\textit{batch\_size} de 15, y entre 50 y 100 épocas. Viendo esta tendencia a la mejora, decidimos dar le salto a \emp{data augmentation}.\\
+Con este modelo fue con el que mejores resultados se obtuvieron. En un primer momento se comprobó que este nuevo modelo mejoraba los resultados del anterior, una vez verificado procedimos a entrenarlo, pero en este caso utilizando las imágenes extra junto a las imágenes base. Esto no se realizó anteriormente ya que queríamos obtener una primera red pues no sabíamos el tiempo de cómputo que requeriría entrenar utilizando todas las imágenes. Se realizaron experimentos con un tamaño de entrada de imágenes de 32x32 y de 256x256. Como era de esperar, los resultados mejoraron a los anteriores; aunque volvimos a obtener mejores resultados con las imágenes de menor tamaño. Todos estas pruebas se realizaron con un
+\textit{batch\_size} de 15, y entre 50 y 100 épocas. Viendo esta tendencia a la mejora, decidimos dar el salto a \emp{data augmentation}.\\
+
+\subsection{Data augmentation}
+
+\emph{Ver el archivo \archive{scratch.py} donde puede verse cómo se define el generador de nuevos ejemplos. Señalar que para la experimentación anterior se alteró este código de modo que no se hiciese ningún tipo de \textit{data augmentation}, aunque ya no se cuente con esta versión del código.}\\
 
 Para realizar el \textit{data augmentation} se utilizó el método \code{ImageDataGenerator} del paquete \code{preprocessing.image}. Dicho método tiene una gran cantidad de parámetros que nos sirven para crear nuevas imágenes a partir de las disponibles de diversas maneras, en nuestro caso hemos utilizado los siguientes:
 
 \begin{itemize}
-\item rotation\_range con valor 180. Básicamente establece el rango en el cual se van a realizar rotaciones aleatorias.
-\item width\_shift\_range y height\_shift\_range, ambos con valor 0.2. Rangos para cambios aleatorios horizontes y verticales.
-\item shear\_range con valor 0.2. Para realizar transformaciones de tipo cizalla.
-\item zoom\_range con valor 0.2. Para realizar transformaciones de tipo zoom.
-\item horizontal\_flip y vertical\_flip con valor True. Para invertir las imágenes vertical y horizontalmente.
-\item fill\_mode con valor nearest. Los puntos fuera de los límites de la entrada son rellenados dependiendo del valor elegido.
+\item \textit{rotation\_range} con valor 180. Básicamente establece el rango en el cual se van a realizar rotaciones aleatorias.
+\item \textit{width\_shift\_range} y \textit{height\_shift\_range}, ambos con valor 0.2. Rangos para cambios aleatorios horizontes y verticales.
+\item \textit{shear\_range} con valor 0.2. Para realizar transformaciones de tipo cizalla.
+\item \textit{zoom\_range} con valor 0.2. Para realizar transformaciones de tipo zoom.
+\item \textit{horizontal\_flip} y \textit{vertical\_flip} con valor True. Para invertir las imágenes vertical y horizontalmente.
+\item \textit{fill\_mode} con valor nearest. Los puntos fuera de los límites de la entrada son rellenados dependiendo del valor elegido.
 \end{itemize}
 
-Una vez obtenidas las nuevas imágenes, son agregadas las imágenes de entrenamiento usando \code{fit}. También debemos modificar el valor del parámetro de \textit{steps\_per\_epoch} por el tamaño del conjunto de entrenamiento/15 (valor de \textit{batch\_size}) y multiplicarlo por un otro valor, esto se va a comentar a continuación. Con este valor podemos aumentar el número de pasos que se realizan antes de avanzar a la siguiente época, lo que significa que si aumentamos el valor, se aumenta la cantidad de datos adicionales que se procesan. Dicho esto, se realizaron pruebas con tamaños de entrada 32x32 y 256x256. Para 32x32 el valor multiplicador comentado fue de 4, mientras que para 256x256 fue 10 y posteriormente 20, ya que se obtuvo un mejor resultado usando las imágenes de tamaño 256x256 que las de 32x32, al contrario de lo que pasó anteriormente. Como comentario, utilizando \textit{data augmentation} x20 se obtuvo uno de los mejores resultados.
+En nuestro caso se ha optado por realizar un \textit{data augmentation online}, es decir, en cada época de entrenamiento se generará un nuevo conjunto de imágenes. Para ello, una vez hemos definido el generador indicamos que queremos entrenar haciendo uso de él por medio de la función \code{fit\_generator}. También debemos modificar el valor del parámetro de \textit{steps\_per\_epoch} por el tamaño del conjunto de entrenamiento/15 (valor de \textit{batch\_size}) y multiplicarlo por un otro valor, esto se va a comentar a continuación. Con este valor podemos aumentar el número de pasos que se realizan antes de avanzar a la siguiente época, lo que significa que si aumentamos el valor, se aumenta la cantidad de datos adicionales que se procesan. Dicho esto, se realizaron pruebas con tamaños de entrada 32x32 y 256x256. Para 32x32 el valor multiplicador comentado fue de 4, mientras que para 256x256 fue 10 y posteriormente 20, ya que se obtuvo un mejor resultado usando las imágenes de tamaño 256x256 que las de 32x32, al contrario de lo que pasó anteriormente. No obstante, como analizaremos más adelante al pasar a 20 el resultado se empeoró.
 
-\subsection{Fine tunning}
+\subsection{Fine tuning}
 
-A continuación vamos a hablar sobre \textit{fine tunning} y los experimentos ejecutados utilizando esta técnica. En esta ocasión se cargaron 2 redes sobre las cuales se realizó \textit{fine tunning}. Dichas redes son, \emp{ResNet50} y \emp{InceptionV3}. Si queremos realizar un entrenamiento de una manera estable y consistente debemos realizar un procedimiento denonimado \textit{transfer learning} antes de aplicar el propio \textit{fine tunning}. \textit{Transfer learning} consiste básicamente en congelar todas las capas excepto la penúltima y volver a entrenar la última capa densa. Por otro lado, \textit{fine tunning} consiste en descongelar las capas convolucionales inferiores y reentrenar mas capas.\\
+\emph{Ver los archivos \archive{fine.py} y \archive{rest.py}}\\
 
-A diferencia de \textit{Learning from scratch} se han realizado un menor número de pruebas, ya que el tiempo de ejecución es mayor y habia que emplearlo correctamente si se querian comprobar todas las cosas que se han comentando en esta memoria. Por lo que hemos realizado dos experimentos con InceptionV3 y tres para ResNet50, ya que como se verá a continuación, ofrece mejores resultados. Cabe mencionar que ambas redes esperan las entradas en tamaño 244x244, siendo la primera vez que se trabajó con dicho tamaño, y a su vez, se usan todas las imágenes disponibles, base y extra, y \textit{data augmentation} en los experimentos. Sin mas dilación, vamos a hablar con mas profundida de ambas redes.\\
+A continuación vamos a hablar sobre \emp{\textit{fine tuning}} y los experimentos ejecutados utilizando esta técnica. En esta ocasión se cargaron 2 redes sobre las cuales se realizó \textit{fine tuning}. Dichas redes son, \emp{ResNet50} y \emp{InceptionV3}. Si queremos realizar un entrenamiento de una manera estable y consistente debemos realizar un procedimiento denominado \textit{transfer learning} antes de aplicar el propio \textit{fine tuning}. \textit{Transfer learning} consiste básicamente en emplear las capas de convolucionales de una red convolucional como un extractor de características y a continuación entrenar un clasificador con estas características, en el caso que nos ocupa estaríamos hablando de entrenar las capass \textit{fully connected} que agregamos a estas redes. Por otro lado, \textit{fine tuning} consiste en descongelar algunas capas convolucionales inferiores y reentrenar más capas.\\
+
+A diferencia de \textit{learning from scratch} se han realizado un menor número de pruebas, ya que el tiempo de ejecución es mayor y había que emplearlo correctamente si se querían comprobar todas las cosas que se han comentando en esta memoria. Por lo que hemos realizado dos experimentos con InceptionV3 y tres para ResNet50, ya que como se verá a continuación, ofrece mejores resultados. Cabe mencionar que ambas redes esperan las entradas en tamaño 244x244, siendo la primera vez que se trabajó con dicho tamaño, y a su vez, se usan todas las imágenes disponibles, base y extra, y \textit{data augmentation} en los experimentos. Sin mas dilación, vamos a hablar con más profundida de ambas redes.\\
  
 \subsubsection{InceptionV3}
 
-Este modelo cuenta con una serie de pesos preentrenados usando ImageNet. Lo primero que debemos hacer es crear el modelo usando \code{InceptionV3} del paquete \code{keras.applications.inception\_v3}, a dicho modelo le añadimos una capa de agrupación promedio espacial global, \textit{global spatial average pooling layer}, con \code{GlobalAveragePooling2D} del paquete \code{keras.layers}. También le agregamos una capa densa, de dimensión 3 y función de activación softmax. Una vez que disponemos del modelo configurado correctamente, se procede a entrenarlo. Para ello, como hemos mencionado antes, se realiza, en primer lugar \textit{transfer learning} con un total de 10 épocas, el resto de parámetros se mantienen como en \textit{Learning from scratch}, ya que fueron los que mejores resultados proporcionaron. Una vez acabado, se procede a con \textit{fine tunning}. En este caso, con un total de 50 épocas. En esta red congelamos las 174 primeras capas. Para descongelarlas usamos el método \code{compile} de la clase \code{model} con \textit{optimizer} SGD, \textit{learning rate} 0.0001, \textit{momentum} 0.9, y como función de pérdida/loss, \textit{sparse\_categorical\_crossentropy}. Se obtuvieron buenos resultados, aunque serían superados por los proporcionados por \emp{RestNet50}
+Este modelo cuenta con una serie de pesos preentrenados usando ImageNet. Lo primero que debemos hacer es crear el modelo usando \code{InceptionV3} del paquete \code{keras.applications.inception\_v3}, a dicho modelo le añadimos una capa de agrupación promedio espacial global, \textit{global spatial average pooling layer}, con \code{GlobalAveragePooling2D} del paquete \code{keras.layers}. También le agregamos una capa densa, de dimensión 3 y función de activación softmax. Una vez que disponemos del modelo configurado correctamente, se procede a entrenarlo.\\
+
+Para ello, como hemos mencionado antes, se realiza, en primer lugar \textit{transfer learning} con un total de 10 épocas, el resto de parámetros se mantienen como en \textit{learning from scratch}, ya que fueron los que mejores resultados proporcionaron. Una vez acabado, se pasa a \textit{fine tuning}. En este caso, con un total de 50 épocas. En esta red congelamos las 174 primeras capas. En esta ocasión entrenamos la red usando como optimizador de la red un Gradiente Descendente Estocástico, \code{SGD}, con un \textit{learning rate} de 0.0001, un \textit{momentum} de 0.9 (esto nor sirve para poder converger más rápido al óptimo en caso de estar en una función con una forma de \textit{meseta} en cuyo caso el SGD convergería muy lento, así el \textit{momentum} nos permite hacer que la velocidad del gradiente se siga manteniendo en la misma dirección, siendo lo usual establecer este parámetro a 0.9 una vez el aprendizaje se ha estabilizado, cosa que conseguimos gracias al \textit{transfer learning}), y como función de pérdida, \textit{sparse\_categorical\_crossentropy} (que nos sirve para calcular el error de entropía cruzada pasándole como salida esperada la etiqueta de cada entrada en lugar de un vector de ceros y unos por cada una). Se obtuvieron buenos resultados, aunque serían superados por los proporcionados por \emp{RestNet50}
 
 \subsubsection{ResNet50}
 
-Este modelo, en cuanto a funcionamiento por parte del usuario, es muy similar al modelo anterior, por lo que realmente, se podría utilizar un script de en el cual se ha entrenado a InceptionV3 para hacer lo propio con ResNet50, realizando los cambios adecuados, como es natural. Para poder usar \code{ResNet50} necesitamos el paquete \code{keras.applications.resnet50}. Al modelo, se le añaden las mismas capas que se le añadieron a InceptionV3, pero en este caso, se congelan las 162 primeras capas, ya que esta red cuenta con un menor número de ellas y se dividen en lo que podríamos denonimar "patrones", por lo que decidimos congelar todas las capas hasta el inicio del último de estos "patrones". Las épocas se mantienen iguales, 10 para \textit{transfer learning} y 50 para \textit{fine tunning}. Utilizando esta red se obtuvieron resultados muy prometedores, de los mejores obtenidos, por lo que se decidió a guardar el modelo entrenado, y volver a entrenarlo usando únicamente \textit{fine tunning} con 100 épocas, lo que nos daría un total de 150 épocas durante su entrenamiento. Para nuestra decepción, los resultados no mejoraron.
+Este modelo, en cuanto a funcionamiento por parte del usuario, es muy similar al modelo anterior, por lo que realmente, se podría utilizar el código con el que se ha entrenado InceptionV3 para hacer lo propio con ResNet50, realizando los cambios adecuados, como es natural. Para poder usar \code{ResNet50} necesitamos el paquete \code{keras.applications.resnet50}. Al modelo, se le añaden las mismas capas que se le añadieron a InceptionV3, pero en este caso, se congelan las 162 primeras capas, ya que esta red cuenta con un menor número de ellas y se dividen en lo que podríamos denonimar "patrones", por lo que decidimos congelar todas las capas hasta el inicio del último de estos "patrones". Las épocas se mantienen iguales, 10 para \textit{transfer learning} y 50 para \textit{fine tuning}. Utilizando esta red se obtuvieron resultados muy prometedores, de los mejores obtenidos, por lo que se decidió a guardar el modelo entrenado, y volver a entrenarlo usando únicamente \textit{fine tuning} con 100 épocas, lo que nos daría un total de 150 épocas durante su entrenamiento. Para nuestra decepción, los resultados no mejoraron.\\
+
+En la siguiente gráfica se muestra cómo fue variando el \textit{accuracy} de la clasificación sobre el conjunto de validación. Como podemos ver estas mejoras se producen pocas veces a lo largo de las 50 épocas de \textit{fine tuning} (de un cambio al siguiente este valor no se mantiene constante, simplemente no mejora) y además desde la primera época a la última donde se mejora no hay una gran diferencia, de aquí que nos plateemos como trabajo futuro emplear etapas de entrenamiento más tempranas como clasificador final, para ver si el sobreaprendizaje nos está afectando o no.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/val_acc.pdf}
+  \caption{Evolución del \textit{accuracy} en el conjunto de validación.}
+\end{figure}
 
 
 \subsection{OVO}
 
+\emph{Ver el archivo \archive{ovo.py} y el \archive{combine.py} para ver un ejemplo de cómo se combinarían los resultados de los tres clasificadores con los dos esquemas de agregación que se emplearon.}\\
+
 Tras los experimentos realizados anteriormente pasamos a descomponer nuestro problema multiclase con un esquema OVO para ello entrenamos tres redes neuronales distintas, la elección de la red a entrenar la hicimos en base a los experimentos anteriores, con lo cual para cada uno de los tres problemas binarios entrenamos una ResNet 50 modificando sus capas \textit{fully connected} para que tengamos dos salidas en lugar de tres como anteriormente.\\
 
-Se generaron, para evitar problemas con las etiquetas de cada clase, de modo que se estuviesen siempre en el conjunto {0,1} y ahora simplemente entrenamos cada una de las redes sobre cada uno de los conjunto creados, nuevamente con 10 \textit{epochs} de \textit{transfer learning} y otras 50 de \textit{fine tunning}. Una vez se han entrenado cada una de las redes pasamos al esquema de agregación de los resultados, las probabilidades, obtenidas para cada una de las clases. Señalar que para estos esquemas se ha supuesto que cada uno de las redes, para aquella clase que ignoran que existe, dan como probabilidad el valor 0.\\
+Se generaron, para evitar problemas con las etiquetas de cada clase, de modo que se estuviesen siempre en el conjunto {0,1} y ahora simplemente entrenamos cada una de las redes sobre cada uno de los conjunto creados, nuevamente con 10 \textit{epochs} de \textit{transfer learning} y otras 50 de \textit{fine tuning}. Una vez se han entrenado cada una de las redes pasamos al esquema de agregación de los resultados, las probabilidades, obtenidas para cada una de las clases. Señalar que para estos esquemas se ha supuesto que cada uno de las redes, para aquella clase que ignoran que existe, dan como probabilidad el valor 0.\\
 
 El primer esquema que se nos ocurrió fue el más simple de todos, simplemente para cada clase la probabilidad asignada será \emp{la media} de la probabilidad para dicha clase asignada por cada una de las tres redes neuronales. No obstante este esquema tiene algo que no nos gusta y es que si por ejemplo tenemos las siguientes probabilidades:
 
@@ -149,6 +169,8 @@ Por lo que no se soluciona el problema que queríamos evitar, seguimos teniendo 
 
 \subsection{Extracción de características con una CNN}
 
+\emph{Ver el archivo \archive{feature.py} donde tenemos tanto el código para la extracción de características, como el código para entrenar una SVM y un modelo de GBoost.}\\
+
 En esta ocasión el proceso fue bastante más sencillo, simplemente cargamos el modelo entrenado con la red ResNet 50, que fue el que mejor resultado nos dio de cara a la clasificación, gracias a las utilizadades de \code{Keras} que nos permiten guardar tanto la topología de la red como sus pesos, de este modo en cualquier momento se puede recuperar un modelo sin necesidad de volver a entrenarlo. Para ello cargamos el modelo con las herramientas \code{model\_from\_json} y \code{load\_weights}, y a continuación creamos un nuevo modelo a partir de este especificando que queremos como capa de salida, el parámetro \code{outputs} de la clase \code{Model}, la última de la parte convolucional de la red. Para saber qué capa escogíamos listamos los nombres de las capas de la red e identificamos el patrón de la estructura de la red y escogimos la última de convolución. Luego simplemente tuvimos que hacer una \textit{predicción} con este modelo sobre las imágenes de \textit{train} y de \textit{test} para luego usar estas características con los algoritmos que comentamos a continuación. Señalar que por falta de recurso y de tiempo en esta ocasión no se realizó \textit{data augmentation}.\\
 
 Pasamos ahora a hablar de los dos algoritmos de clasificación que empleamos sobre este conjunto de características, 2048 para cada imagen, \emp{SVM y GBoost} ambos usados a través de la librería \code{scikit-learn} para Python. Hay que destacar que aunque esta librería no cuenta con soporte para GPU en general hemos quedado muy sorprendidos y satisfechos con el rendimiento de la implementación de estos algoritmos y la comodidad de uso que tiene toda su funcionalidad, además de la excelente documentación.
@@ -170,14 +192,16 @@ Entonces una vez que especificamos este grid empleamos la función \code{GridSea
 El proceso para GBoost es muy similar sólo que ahora hacemos uso de la clase \code{GradientBoostingClassifier} y el grid de parámetros que configuramos es el siguiente:
 
 \begin{itemize}
-\item El número de estimadores puede ser 50, 100 o 200.
+\item El número de árboles de regresión puede ser 50, 100 o 200.
 \item Las profundidad máxima de los árboles puede ser 3 o 5.
 \item La tasa de aprendizaje podrá tomar los valores 0.001, 0.1 o 1.
 \end{itemize}
 
-Tras el proceso descrito con anterioridad se llega a que el mejor conjunto de parámetros es el TODO y nuevamente obtenemos las probabilidades con estos parámetros.
+Tras el proceso descrito con anterioridad se llega a que el mejor conjunto de parámetros es tener 200 árboles con una profundidad máxima de 5 y empleando una tasa de aprendizaje de 0.1. Nuevamente obtenemos las probabilidades con estos parámetros.
 
 \subsection{Extracción de características con técnicas convencionales}
+
+\emph{Ver los archivos \archive{featureHOG.py} y \archive{featureORB.py}}
 
 \subsubsection{HOG}
 
