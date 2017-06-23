@@ -1,44 +1,53 @@
 \begin{landscape}
 \section{Listado de soluciones}
 \pagestyle{empty}
-% Please add the following required packages to your document preamble:
-% \usepackage[table,xcdraw]{xcolor}
-% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
 \begin{table}[H]
 \centering
-\caption{My caption}
-\label{soluciones}
+\caption{Resultados}
+\label{my-label}
 \begin{tabular}{|l|c|c|c|c|c|}
 \hline
 \rowcolor[HTML]{9B9B9B} 
-\multicolumn{1}{|c|}{\cellcolor[HTML]{9B9B9B}\textbf{Nº}} & \textbf{CSV}                                                 & \textbf{Preprocesamiento} & \textbf{Algoritmos y softw.} & \textbf{val\_acc}                                                   & \textbf{Kaggle score} \\ \hline
-1 6/6                                                     & submission 0001.csv                                          &                           &                              & desc.                                                               & 0.92302               \\ \hline
-2 7/6                                                     & scrath\_train.csv                                            &                           &                              & 0.55818                                                             & 0.92872               \\ \hline
-3 7/6                                                     & scrath\_train32.csv                                          &                           &                              & 0.85533                                                             & 0.89738               \\ \hline
-4 7/6                                                     & scrath\_train256simplerCNN.csv                               &                           &                              & 0.54469                                                             & 0.94776               \\ \hline
+\multicolumn{1}{|c|}{\cellcolor[HTML]{9B9B9B}\textbf{Nº}} & \textbf{CSV}                                                 & \textbf{Preprocesamiento}                                                            & \textbf{Algoritmos y softw.} & \textbf{val\_acc}                                                   & \textbf{Kaggle score} \\ \hline
+1 6/6                                                     & submission 0001.csv                                          & Escalado 256x256                                                                     & backpropagation Keras        & desc.                                                               & 0.92302               \\ \hline
+2 7/6                                                     & scrath\_train.csv                                            & Escalado 256x256                                                                     & Igual que 1                  & 0.55818                                                             & 0.92872               \\ \hline
+3 7/6                                                     & scrath\_train32.csv                                          & Escalado 32x32                                                                       & Igual que 1                  & 0.85533                                                             & 0.89738               \\ \hline
+4 7/6                                                     & scrath\_train256simplerCNN.csv                               & Escalado 256x256                                                                     & Igual que 1                  & 0.54469                                                             & 0.94776               \\ \hline
 \rowcolor[HTML]{FD6864} 
-5 7/6                                                     & scrath\_train\_all32.csv                                     &                           &                              & desc.                                                               & 2.31209               \\ \hline
-6 7/6                                                     & scrath\_train\_all32v2.csv                                   &                           &                              & 0.51296                                                             & 0.91077               \\ \hline
-7 8/6                                                     & scrath\_train\_all256.csv                                    &                           &                              & 0.56040                                                             & 1.69263               \\ \hline
+5 7/6                                                     & scrath\_train\_all32.csv                                     & Escalado 32x32                                                                       & Igual que 1                  & desc.                                                               & 2.31209               \\ \hline
+6 7/6                                                     & scrath\_train\_all32v2.csv                                   & Escalado 32x32                                                                       & Igual que 1                  & 0.51296                                                             & 0.91077               \\ \hline
+7 8/6                                                     & scrath\_train\_all256.csv                                    & Escalado 256x256                                                                     & Igual que 1                  & 0.56040                                                             & 1.69263               \\ \hline
 \rowcolor[HTML]{FD6864} 
-8 8/6                                                     & scrath\_train\_all32dataAugmentation.csv                     &                           &                              &                                                                     & 0.90680               \\ \hline
-9 8/6                                                     & scrath\_train\_all32dataAugmentation.csv                     &                           &                              & 0.49087                                                             & 0.90646               \\ \hline
-10 8/6                                                    & scrath\_train\_all256dataAugmentation.csv                    &                           &                              & 0.52622                                                             & 0.87450               \\ \hline
-11 9/6                                                    & scrath\_train\_all256dataAugmentationx20.csv                 &                           &                              & 0.52298                                                             & 0.88144               \\ \hline
+8 8/6                                                     & scrath\_train\_all32dataAugmentation.csv                     & \begin{tabular}[c]{@{}c@{}}Escalado 256x256\\ Trans. aleatorias/epoch\end{tabular}   & Igual que 1                  & desc.                                                               & 0.90680               \\ \hline
+9 8/6                                                     & scrath\_train\_all32dataAugmentation.csv                     & \begin{tabular}[c]{@{}c@{}}Escalado 32x32\\ Trans. aleatorias/epoch\end{tabular}     & Igual que 1                  & 0.49087                                                             & 0.90646               \\ \hline
+10 8/6                                                    & scrath\_train\_all256dataAugmentation.csv                    & Igual que 8                                                                          & Igual que 1                  & 0.52622                                                             & 0.87450               \\ \hline
+11 9/6                                                    & scrath\_train\_all256dataAugmentationx20.csv                 & Igual que 8                                                                          & Igual que 1                  & 0.52298                                                             & 0.88144               \\ \hline
 \rowcolor[HTML]{FD6864} 
-12 10/6                                                   & fine\_tunning\_InceptionV3\_all244fineTuningx20.csv          &                           &                              & desc.                                                               & 0.95942               \\ \hline
-13 10/6                                                   & fine\_tunning\_InceptionV3\_all244fineTuningx20.csv          &                           &                              & 0.62110                                                             & 0.87606               \\ \hline
-14 11/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20.csv             &                           &                              & 0.59959                                                             & 0.82786               \\ \hline
-15 12/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20Continuation.csv &                           &                              & 0.65468                                                             & 1.00893               \\ \hline
+12 10/6                                                   & fine\_tunning\_InceptionV3\_all244fineTuningx20.csv          & \begin{tabular}[c]{@{}c@{}}Escalado 244x244\\ Trans. aleatorias/epoch\end{tabular}   & Igual que 1 en dos fases     & desc.                                                               & 0.95942               \\ \hline
+13 10/6                                                   & fine\_tunning\_InceptionV3\_all244fineTuningx20.csv          & Igual que 12                                                                         & Igual que 12                 & 0.62110                                                             & 0.87606               \\ \hline
+14 11/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20.csv             & Igual que 12                                                                         & Igual que 12                 & 0.59959                                                             & 0.82786               \\ \hline
+15 12/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20Continuation.csv & Igual que 12                                                                         & Igual que 12                 & 0.65468                                                             & 1.00893               \\ \hline
 \rowcolor[HTML]{67FD9A} 
-16 12/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20OVOMedia.csv     &                           &                              & \begin{tabular}[c]{@{}c@{}}0.75701\\ 0.81900\\ 0.67885\end{tabular} & 0.81792               \\ \hline
+16 12/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20OVOMedia.csv     & Igual que 12                                                                         & Igual que 12                 & \begin{tabular}[c]{@{}c@{}}0.75701\\ 0.81900\\ 0.67885\end{tabular} & 0.81792               \\ \hline
 \rowcolor[HTML]{FD6864} 
-17 12/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20OVOOtro.csv      &                           &                              & desc.                                                               & 0.81792               \\ \hline
-18 12/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20OVOLVPC.csv      &                           &                              & \begin{tabular}[c]{@{}c@{}}0.75701\\ 0.81900\\ 0.67885\end{tabular} & 0.82102               \\ \hline
-19 12/6                                                   & ResNet\_SVM.csv                                              &                           &                              & 0.59959                                                             & 0.91983               \\ \hline
-20 13/6                                                   & SVMprobsTune.csv                                             &                           &                              & 0.59959                                                             & 0.87503               \\ \hline
-21 13/6                                                   & GBoostprobsTune.csv                                          &                           &                              & 0.59959                                                             & 0.94694               \\ \hline
-22 13/6                                                   & ResNet\_GBoost.csv                                           &                           &                              & 0.59959                                                             & 0.90360               \\ \hline
+17 12/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20OVOOtro.csv      & Igual que 12                                                                         & Igual que 12                 & desc.                                                               & 0.81792               \\ \hline
+18 12/6                                                   & fine\_tunning\_ResNet50\_all244fineTuningx20OVOLVPC.csv      & Igual que 12                                                                         & Igual que 12                 & \begin{tabular}[c]{@{}c@{}}0.75701\\ 0.81900\\ 0.67885\end{tabular} & 0.82102               \\ \hline
+19 12/6                                                   & ResNet\_SVM.csv                                              & \begin{tabular}[c]{@{}c@{}}Normalizar las\\ características\\ extraídas\end{tabular} & SVM de scikit-learn          & 0.59959                                                             & 0.91983               \\ \hline
+20 13/6                                                   & SVMprobsTune.csv                                             & Igual que 19                                                                         & Igual que 20                 & 0.59959                                                             & 0.87503               \\ \hline
+21 13/6                                                   & GBoostprobsTune.csv                                          & Igual que 19                                                                         & GBoost de scikit-learn       & 0.59959                                                             & 0.94694               \\ \hline
+22 13/6                                                   & ResNet\_GBoost.csv                                           & Igual que 19                                                                         & Igual que 21                 & 0.59959                                                             & 0.90360               \\ \hline
 \end{tabular}
 \end{table}
 \end{landscape}
+
+\newpage
+
+Sobre la tabla anterior conviene realizar algunas aclaraciones:
+
+\begin{itemize}
+\item Se marcan en rojo los \textit{submissions} que erróneos, aquellos en los que se subieron a la plataforma clasificaciones que son incorrectas en su generación. En verde se resalta el mejor submission realizado.
+\item El valor \emph{val\_acc} hace referencia al \textit{accuracy} obtenido por la red sobre un conjunto de validación, formado por el 40\% del conjunto de entrenamiento.
+\item Este valor en el caso de los esquemas OVO muestra el \emph{val\_acc} obtenido por cada uno de los tres clasificadores binarios: 1-2, 1-3 y 2-3 respectivamente.
+\item Junto con el número de \textit{submission} se muestra la fecha de la misma.
+\item Cuando se pone \emph{desc.} significa que no disponemos de este dato en el momento en el que se completó esta tabla.
+\end{itemize}

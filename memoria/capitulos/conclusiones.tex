@@ -1,2 +1,20 @@
 \section{Conclusiones y trabajo futuro}
-TODO
+
+Tras la realización de esta práctica en la que hemos podido profundizar en el uso de las redes neuronales convolucionales para la clasificación de imágenes extraeríamos las siguientes conclusiones:
+
+\begin{itemize}
+\item Las redes neuronales convolucionales constituyen una herramienta clave para la clasificación de imágenes hoy en día. Ya pudimos ver en asignaturas anteriores como la aparición de las redes neuronales supuso una revolución para la clasificación de imágenes, desbancando a las técnicas de Visión por Computador usuales.
+\item La técnicas de \textit{fine tunning} es una gran herramienta ya que nos permite obtener unos excelentes resultados consumiendo menos tiempo, no de entrenamiento, que aproximadamente fue el mismo que para el caso de \textit{learning from scratch} sino de diseño de una red. Además aunque el tiempo de entrenamiento fue el mismo las redes diseñadas y entrenadas en nuestro caso eran mucho más simples en cuanto a tamaños que las ajustadas: InceptionV3 y ResNet50.
+\item Este tipo de competiciones y de tareas son fuertemente dependientes de la capacidad de cómputo del grupo. Es obvio que la experiencia y pericia en este campo son fundamentales a la hora de saber analizar un problema y emplear las técnicas más adecuadas para el mismo. Ahora bien la posibilidad de realizar los experimento en un tiempo lo más corto posible es una ventaja muy importante en este tipo de problemas.
+\item La previsión en este tipo de tareas es de gran importancia ya que como se ha dicho los tiempos de cómputo pueden llegar a ser muy elevados con lo que tener preparados los modelos a entrenar lo más pronto posible es crucial.
+\item Diseñar una buena red neuronal es un problema muy complejo ya que se tiene que conocer muy bien la teoría subyacente y cómo emplear distintas capas, con distintas funcionalidades, de cara a, al fin y al cabo, extraer las características más importantes de nuestros datos de entrada y obtener con ellos una buena clasificación.
+\item Los esquemas de binarización son una herramienta muy importante, nos permiten entrenar clasificadores específicos para un problema binario que con lo cuál sabrán detectar cuáles son las características más relevantes para ese problema y luego combinarlos para obtener una solución de calidad para nuestro problema multiclase.
+\end{itemize}
+
+Por otro lado como trabajo futuro, debido a los problemas que nos han surgido, quedan muchas tareas pendientes:
+
+\begin{itemize}
+\item Probar a emplear en la clasificación etapas más tempranas de entrenamiento de las redes neuronales, comprobando así si se ha sufrido de sobreentrenamiento o si con menos tiempo de cómputo los resultados obtenidos seguirían siendo de una calidad similar.
+\item Entrenar durante más épocas la red InceptionV3 para ver si sus malos resultados se debían a un sobreentrenamiento o a todo lo contrario.
+\item Emplear técnicas de extracción de características usuales en el campo de la Visión por Computador, pudiendo así comparar los resultados obtenidos con las características extraídas por medio de una red neuronal convolucional.
+\end{itemize}
